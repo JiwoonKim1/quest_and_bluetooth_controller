@@ -1,0 +1,44 @@
+{
+    "name": "PlayerControl",
+    "maps": [
+        {
+            "name": "New action map",
+            "id": "23f0ee12-d7f7-4698-a83e-c5c686289275",
+            "actions": [
+                {
+                    "name": "New action",
+                    "type": "Button",
+                    "id": "967c64e1-6536-4e19-933c-d54160334c4b",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "Press"
+                }
+            ],
+            "bindings": [
+                {
+                    "name": "",
+                    "id": "31c2b830-0291-40cc-a212-5f9722c399f8",
+                    "path": "<Gamepad>/buttonEast",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "New action",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "9634194b-a83c-4979-a4dd-2dc6460d447a",
+                    "path": "<Mouse>/press",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "New action",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                }
+            ]
+        }
+    ],
+    "controlSchemes": []
+}
