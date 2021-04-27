@@ -9,74 +9,47 @@ using UnityEngine.InputSystem.LowLevel;
 using System.Runtime.InteropServices;
 using UnityEditor;
 
-//입력이 수신되고 저장되는 형태를 나타내는 C# 구조를 생성하고
-//해당 상태를 검색하기 위해 장치에 대해 생성되어야 하는 입력 제어 인스턴스를 설명
-[StructLayout(LayoutKind.Explicit, Size =8)]
+//입력이 수신되고 저장되는 형태를 나타내는 C# 구조를 생성
 public struct myDeviceState : IInputStateTypeInfo
 {
-    //public FourCC format => throw new System.NotImplementedException();
-
-    // Every state format is tagged with a FourCC code that is used for type
-    // checking. The characters can be anything. Choose something that allows
-    // you do easily recognize memory belonging to your own device.
+    // FourCC type codes are used to identify the memory layouts of state blocks.
     public FourCC format => new FourCC('M', 'D', 'E', 'V');
 
-    // InputControlAttributes on fields tell the input system to create controls
-    // for the public fields found in the struct.
-    [InputControl(name = "button", layout = "Button", bit = 1)]
-    public short button;
+    [InputControl(name = "button", layout = "Button", bit = 4)]
+    public int button;
 
 }
 
-//기본 클래스 중 하나에서 파생된 클래스가 필요
-[InputControlLayout(displayName = "My Device", stateType = typeof(myDeviceState))]
-public class myDevice : InputDevice, IInputUpdateCallbackReceiver
-{
+[InputControlLayout(stateType = typeof(myDeviceState))]
 #if UNITY_EDITOR
-    static myDevice()
-    {
-        Initialize();
-    }
-
+[InitializeOnLoad] // Make sure static constructor is called during startup.
 #endif
-
-    [RuntimeInitializeOnLoadMethod]
-    private static void Initialize()
-    {
-        InputSystem.RegisterLayout<myDevice>(
-            matches: new InputDeviceMatcher()
-                .WithInterface("myDeviceInput"));
-        InputSystem.AddDevice<myDevice>();
-    }
-    /*
-    //[ContextMenuItem("Tools/Add MyDevice")]
-    public static void Initialize()
-    {
-        InputSystem.AddDevice<myDevice>();
-    }
-    */
-
-    [InputControl]
+public class myDevice : InputDevice
+{
     public ButtonControl button { get; private set; }
 
+    //생성자
+    static myDevice()
+    {
+        InputSystem.RegisterLayout<myDevice>(
+            matches : new InputDeviceMatcher()
+            .WithInterface("HID")
+            .WithCapability("PID", 0)
+            .WithCapability("VID", 65535));
+    }
+
+    // This is only to trigger the static class constructor to automatically run
+    // in the player.
+    [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
+    private static void InitializeInPlayer() { Debug.Log("Startup"); }
+
+
     protected override void FinishSetup()
+    //protected override void FinishSetup(InputControlSetup setup)
     {
         base.FinishSetup();
-        button = GetChildControl<ButtonControl>(path: "button");
+        button = GetChildControl<ButtonControl>("button");
     }
-
-    public void OnUpdate()
-    {
-        throw new System.NotImplementedException();
-        // In practice, this is where we would be reading out data from an external
-        // API. Instead, here we just make up some (empty) input.
-        var state = new myDeviceState();
-        InputSystem.QueueStateEvent(this, state);
-    }
-
-    [RuntimeInitializeOnLoadMethod]
-    private static void InitializeInPlayer() { }
-
 
 }
 
